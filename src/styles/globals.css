@@ -1,0 +1,41 @@
+.display{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid black;
+}
+
+.display .resultado{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-content: flex-end;
+    gap: 10px;
+    padding: 5px;
+    width: 500px;
+    background-color: chocolate;
+}
+
+.display .resultado > div {
+    width: calc(20% - 10px);
+    height: 100px;
+    background-color: brown;
+}
+
+.display .item{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin-top: 10px;
+    gap: 50px;
+    padding: 5px;
+    background-color: violet;
+}
+
+.display .item > div{
+    width: 100px;
+    height: 100px;
+    background-color: brown;
+}
