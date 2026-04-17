@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Jogo() {
     const totalItensSuperior = 5;
     const totalItensBase = 4;
-    const tentativas = 2;
+    const tentativas = 10;
 
     const feedback = {
         correto: "bi bi-check2",
@@ -20,6 +20,7 @@ export default function Jogo() {
     const [itemSelecionado, setItemSelecionado] = useState([]);
     const [conjunto, setConjunto] = useState(1);
     const [contadorTentativas, setContadorTentativas] = useState(tentativas);
+    const [itemAtivoId, setItemAtivoId] = useState(null);
 
     
     useEffect(() => {
@@ -76,9 +77,16 @@ export default function Jogo() {
         return resultados.sort(() => Math.random() - 0.5).slice(0, totalItensSuperior);
     };
 
-    const selecionarItem = (item) => {
+    const selecionarItem = (item, id) => {
+        setItemAtivoId(prevId => prevId === id ? null : id);
+
         setItemSelecionado(prev => {
             const novo = [...prev, item];
+
+            if (novo[0] === novo[1]){
+                setItemAtivoId(null);
+                return [];
+            }
 
             if (novo.length === 2) {
 
@@ -103,11 +111,14 @@ export default function Jogo() {
                     return novoBuffer;
                 });
 
+                setItemAtivoId(null);
+
                 return [];
             }
 
             return novo;
         });
+
     };
 
     const verificarCombinacao = () => {
@@ -116,23 +127,11 @@ export default function Jogo() {
         const usados = [];
         const icones = [];
 
-        if (contadorTentativas === 0){
-            alert("tentativas esgotadas");
-            return;
-        }
-
         // Verifica se todos os espaços estão preenchidos
         if (!linha.every(item => item.combinacao !== null)) {
             alert("Preencha todos os itens antes de verificar!");
             return;
         }
-
-        console.log(contadorTentativas)
-
-        // verifica se as tentativas foram esgotadas
-        //if (!buffer.some(linha => linha.some(item => !item.combinacao))) {
-            //alert("tentativas esgotadas");
-        //}
 
         const nomes = linha.map(item => item.combinacao.resultado?.nome);
 
@@ -192,6 +191,11 @@ export default function Jogo() {
 
         setConjunto(prev => prev + 1);
         setContadorTentativas(prev => prev - 1);
+
+        if (contadorTentativas-1 === 0){
+            alert("tentativas esgotadas");
+            return;
+        }
     };
 
     const LimparCombinacao = () => {
@@ -210,18 +214,21 @@ export default function Jogo() {
     if (!dados) return <p>Carregando...</p>;
     
     return (
-        <>
+        <div className="main">
             <div className="display">
                 {buffer.slice(0, conjunto).map((linha, i) => (
                     <div key={i} className="resultado">
                         {linha.map((item, j) => (
-                            <div key={j} id={j}>
+                            <div 
+                                key={j} 
+                                style={{ "--colunas": `${100 / totalItensSuperior}%` }}
+                            >
                                 {item.combinacao ? (
                                     <>
                                         <Image
                                             src={item.combinacao.resultado.imagem}
-                                            width={50}
-                                            height={50}
+                                            width={64}
+                                            height={64}
                                             alt={item.combinacao.resultado.nome}
                                         />
                                         <p>
@@ -230,7 +237,7 @@ export default function Jogo() {
                                         </p>
                                     </>
                                 ) : (
-                                    <p>vazio</p>
+                                    <></>
                                 )}
                             </div>
                         ))}
@@ -246,12 +253,16 @@ export default function Jogo() {
                     {itensAleatorios.map((elemento, index) => (
                         <div 
                             key={index} 
-                            onClick={() => selecionarItem(elemento.nome)}
+                            className="blocoBase"
+                            style={{
+                                border: index === itemAtivoId ? '3px solid green' : 'none'
+                            }}
+                            onClick={() => selecionarItem(elemento.nome, index)}
                         >
                             <Image
                                 src={elemento.imagem}
-                                width={50}
-                                height={50}
+                                width={64}
+                                height={64}
                                 alt={elemento.nome}
                             />
                             <p>{elemento.nome}</p>
@@ -265,6 +276,14 @@ export default function Jogo() {
                     >Verificar</button>
                 </div>
             </div>
-        </>
+            <div className="descricao">
+                <div>
+                    Tentativas restantes: {contadorTentativas}
+                </div>
+                <div>
+                    descrição
+                </div>
+            </div>
+        </div>
     )
 }

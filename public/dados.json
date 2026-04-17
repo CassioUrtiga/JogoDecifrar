@@ -2,19 +2,19 @@
     "elementos": [
         {
             "nome": "Água",
-            "imagem": "https://cdn-icons-png.flaticon.com/512/414/414974.png"
+            "imagem": "/png/água.png"
         },
         {
             "nome": "Fogo",
-            "imagem": "https://cdn-icons-png.flaticon.com/512/482/482089.png"
+            "imagem": "/png/fogo.png"
         },
         {
             "nome": "Terra",
-            "imagem": "https://cdn-icons-png.flaticon.com/512/2909/2909763.png"
+            "imagem": "/png/terra.png"
         },
         {
             "nome": "Energia",
-            "imagem": "https://cdn-icons-png.flaticon.com/512/744/744465.png"
+            "imagem": "/png/energia.png"
         }
     ],
     "combinacoes": [
@@ -22,28 +22,28 @@
             "ingredientes": ["Água", "Fogo"],
             "resultado": {
                 "nome": "Vapor",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/414/414927.png"
+                "imagem": "/png/vapor.png"
             }
         },
         {
             "ingredientes": ["Água", "Terra"],
             "resultado": {
                 "nome": "Lama",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/2933/2933245.png"
+                "imagem": "/png/lama.png"
             }
         },
         {
             "ingredientes": ["Água", "Energia"],
             "resultado": {
                 "nome": "Explosão",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/2933/2933245.png"
+                "imagem": "/png/explosão.png"
             }
         },
         {
             "ingredientes": ["Fogo", "Terra"],
             "resultado": {
                 "nome": "Lava",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/2933/2933245.png"
+                "imagem": "/png/lava.png"
             }
         },
         {
