@@ -1,30 +1,32 @@
-.main{
+.main {
     display: grid;
-    grid-template-columns: 6fr 1fr; /*fr medida de fração*/
-    grid-template-rows: 100vh;
-    grid-template-areas: "b1 b2";
-    gap: 5px 5px;
+    height: 100vh;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 4fr 1fr; 
+    grid-template-areas: "b1 b2" "b3 b2";
+    box-sizing: border-box;
 }
 
 .display{
-    grid-area: "b1";
+    grid-area: b1;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    background-image: linear-gradient(#F0EBD5, white);
+    overflow-y: auto;
 }
 
 .display .resultado{
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-content: flex-end;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     padding: 10px;
     width: 500px;
     text-align: center;
-    background-color: #d1a79b5c;
 }
 
 .display .resultado > div {
@@ -36,6 +38,7 @@
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
+    background-color: white;
 }
 
 .display .resultado > div img{
@@ -54,44 +57,107 @@
     font-size: 25px;
 }
 
-.display .item{
+.item{
+    grid-area: b3;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     flex-direction: row;
-    margin-top: 10px;
-    gap: 50px;
-    padding: 15px;
-    border: 3px solid #736151;
-    border-radius: 30px;
+    justify-content: center;
+    align-items: center;
+    gap: 0px 35px;
 }
 
-.display .item > div{
+.item div, 
+.item button {
+    width: 100px;
+    height: 100px;
+}
+
+.item > div{
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
-    width: 100px;
-    height: 100px;
     text-align: center;
 }
 
-.display .item .blocoBase img{
+.item .blocoBase img{
     margin-top: 15px;
 }
 
-.display .item .blocoBase:hover {
+.item .blocoBase:hover {
     cursor: pointer; 
     background-color: #f0f0f0;
     transition: background-color 0.3s ease;
 }
 
 .descricao{
-    grid-area: "b2";
+    grid-area: b2;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+    background-image: linear-gradient(#9BBAAB, #F0EBD5);
+    position: relative;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.200);
+}
+
+.descricao > :first-child {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 10; 
+    width: 80%;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+    pointer-events: none;
+}
+
+.descricao > .show-alert {
+    top: 10px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.descricao .tentativas{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.247);
+    font-size: 21px;
+    background-color: #F0EBD5;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 3px #30272d43;
+}
+
+.descricao .icons{
+    padding: 30px;
+    background-color: #F0EBD5;
+    border-radius: 50px;
+}
+
+.descricao .icons p{
+    font-size: 21px;
+}
+
+.descricao .icons i{
+    padding: 5px;
+}
+
+.scroll::-webkit-scrollbar {
+    width: 0px;
+}
+   
+.scroll::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+   
+.scroll::-webkit-scrollbar-thumb {
+    background-color: #5D877A;
 }

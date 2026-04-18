@@ -7,10 +7,10 @@ export default function Jogo() {
     const tentativas = 10;
 
     const feedback = {
-        correto: "bi bi-check2",
-        parcial: "bi bi-check2-circle",
-        trocar: "bi bi-arrow-repeat",
-        errado: "bi bi-ban"
+        correto: "bi bi-check2 text-success",
+        parcial: "bi bi-check2-circle text-warning",
+        trocar: "bi bi-arrow-repeat text-info",
+        errado: "bi bi-ban text-danger"
     }
 
     const [dados, setDados] = useState(null);
@@ -21,6 +21,7 @@ export default function Jogo() {
     const [conjunto, setConjunto] = useState(1);
     const [contadorTentativas, setContadorTentativas] = useState(tentativas);
     const [itemAtivoId, setItemAtivoId] = useState(null);
+    const [alert, setAlert] = useState(null);
 
     
     useEffect(() => {
@@ -51,6 +52,29 @@ export default function Jogo() {
             setCombinacoes(gerarResultados(aleatorios, dados));
         }
     }, [dados]);
+
+   useEffect(() => {
+        if (!alert) return;
+
+        let start;
+        let requestId;
+        const duration = 2000;
+
+        const tick = (timestamp) => {
+            if (!start) start = timestamp;
+            const elapsed = timestamp - start;
+
+            if (elapsed < duration) {
+                requestId = requestAnimationFrame(tick);
+            } else {
+                setAlert(null);
+            }
+        };
+
+        requestId = requestAnimationFrame(tick);
+
+        return () => cancelAnimationFrame(requestId);
+    }, [alert]);
 
     const gerarResultados = (itensAleatorios, dados) => {
         const resultados = [];
@@ -129,7 +153,7 @@ export default function Jogo() {
 
         // Verifica se todos os espaços estão preenchidos
         if (!linha.every(item => item.combinacao !== null)) {
-            alert("Preencha todos os itens antes de verificar!");
+            setAlert("Preencha todos os espaços");
             return;
         }
 
@@ -193,9 +217,19 @@ export default function Jogo() {
         setContadorTentativas(prev => prev - 1);
 
         if (contadorTentativas-1 === 0){
-            alert("tentativas esgotadas");
+            alert("fim de jogo, tentativas esgotadas");
             return;
         }
+
+        // Faz o scrool descer até o limite automáticamente
+        const container = document.querySelector('.display');
+
+        requestAnimationFrame(() => {
+            container.scrollTo({
+                top: container.scrollHeight * 2,
+                behavior: 'smooth'
+            });
+        });
     };
 
     const LimparCombinacao = () => {
@@ -215,7 +249,7 @@ export default function Jogo() {
     
     return (
         <div className="main">
-            <div className="display">
+            <div className="display scroll">
                 {buffer.slice(0, conjunto).map((linha, i) => (
                     <div key={i} className="resultado">
                         {linha.map((item, j) => (
@@ -227,6 +261,7 @@ export default function Jogo() {
                                     <>
                                         <Image
                                             src={item.combinacao.resultado.imagem}
+                                            priority
                                             width={64}
                                             height={64}
                                             alt={item.combinacao.resultado.nome}
@@ -237,51 +272,63 @@ export default function Jogo() {
                                         </p>
                                     </>
                                 ) : (
-                                    <></>
+                                    <p>Vazio</p>
                                 )}
                             </div>
                         ))}
                     </div>
                 ))}
-                <div className="item">
-                    <button 
-                        type="button" 
-                        class="btn btn-danger"
-                        onClick={LimparCombinacao}
-                    >Limpar</button>
+            </div>
+            <div className="item">
+                <button 
+                    type="button" 
+                    class="btn btn-danger"
+                    onClick={LimparCombinacao}
+                >Limpar</button>
 
-                    {itensAleatorios.map((elemento, index) => (
-                        <div 
-                            key={index} 
-                            className="blocoBase"
-                            style={{
-                                border: index === itemAtivoId ? '3px solid green' : 'none'
-                            }}
-                            onClick={() => selecionarItem(elemento.nome, index)}
-                        >
-                            <Image
-                                src={elemento.imagem}
-                                width={64}
-                                height={64}
-                                alt={elemento.nome}
-                            />
-                            <p>{elemento.nome}</p>
-                        </div>
-                    ))}
+                {itensAleatorios.map((elemento, index) => (
+                    <div 
+                        key={index} 
+                        className="blocoBase"
+                        style={{
+                            border: index === itemAtivoId ? '3px solid green' : 'none'
+                        }}
+                        onClick={() => selecionarItem(elemento.nome, index)}
+                    >
+                        <Image
+                            src={elemento.imagem}
+                            priority
+                            width={64}
+                            height={64}
+                            alt={elemento.nome}
+                        />
+                        <p>{elemento.nome}</p>
+                    </div>
+                ))}
 
-                    <button 
-                        type="button" 
-                        class="btn btn-success"
-                        onClick={verificarCombinacao}
-                    >Verificar</button>
-                </div>
+                <button 
+                    type="button" 
+                    class="btn btn-success"
+                    onClick={verificarCombinacao}
+                >Verificar</button>
             </div>
             <div className="descricao">
-                <div>
-                    Tentativas restantes: {contadorTentativas}
+                {alert ? 
+                    <div className="alert alert-warning show-alert" role="alert">
+                        {alert}
+                    </div>
+                    :
+                    <div></div>
+                }
+                <div className="tentativas">
+                    <div>Tentativas restantes</div>
+                    <div>{contadorTentativas}</div>
                 </div>
-                <div>
-                    descrição
+                <div className="icons">
+                    <p><i className={feedback.correto}></i>Correto</p>
+                    <p><i className={feedback.parcial}></i>Parcial</p>
+                    <p><i className={feedback.trocar}></i>Trocar posição</p>
+                    <p><i className={feedback.errado}></i>Errado</p>
                 </div>
             </div>
         </div>

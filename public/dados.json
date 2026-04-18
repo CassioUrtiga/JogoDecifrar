@@ -15,6 +15,10 @@
         {
             "nome": "Energia",
             "imagem": "/png/energia.png"
+        },
+        {
+            "nome": "Madeira",
+            "imagem": "/png/madeira.png"
         }
     ],
     "combinacoes": [
@@ -49,15 +53,43 @@
         {
             "ingredientes": ["Fogo", "Energia"],
             "resultado": {
-                "nome": "Chamas",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/2933/2933245.png"
+                "nome": "Chama",
+                "imagem": "/png/chama.png"
             }
         },
         {
             "ingredientes": ["Terra", "Energia"],
             "resultado": {
-                "nome": "Incomum",
-                "imagem": "https://cdn-icons-png.flaticon.com/512/2933/2933245.png"
+                "nome": "Ímã",
+                "imagem": "/png/ímã.png"
+            }
+        },
+        {
+            "ingredientes": ["Madeira", "Água"],
+            "resultado": {
+                "nome": "Barco",
+                "imagem": "/png/barco.png"
+            }
+        },
+        {
+            "ingredientes": ["Madeira", "Fogo"],
+            "resultado": {
+                "nome": "Carvão",
+                "imagem": "/png/carvão.png"
+            }
+        },
+        {
+            "ingredientes": ["Madeira", "Terra"],
+            "resultado": {
+                "nome": "Árvore",
+                "imagem": "/png/árvore.png"
+            }
+        },
+        {
+            "ingredientes": ["Madeira", "Energia"],
+            "resultado": {
+                "nome": "Biomassa",
+                "imagem": "/png/biomassa.png"
             }
         }
     ]
