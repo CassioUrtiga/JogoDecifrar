@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function Jogo() {
-    const totalItensSuperior = 5;
-    const totalItensBase = 4;
-    const tentativas = 10;
+    const totalItensSuperior = 4;
+    const totalItensBase = 5;
+    const tentativas = 5;
 
     const feedback = {
         correto: "bi bi-check2 text-success",
@@ -22,6 +22,7 @@ export default function Jogo() {
     const [contadorTentativas, setContadorTentativas] = useState(tentativas);
     const [itemAtivoId, setItemAtivoId] = useState(null);
     const [alert, setAlert] = useState(null);
+    const [modalData, setModalData] = useState({titulo: null, mensagem: null})
 
     
     useEffect(() => {
@@ -153,7 +154,7 @@ export default function Jogo() {
 
         // Verifica se todos os espaços estão preenchidos
         if (!linha.every(item => item.combinacao !== null)) {
-            setAlert("Preencha todos os espaços");
+            setAlert("Preencha os espaços vazios");
             return;
         }
 
@@ -171,7 +172,15 @@ export default function Jogo() {
                 return novo;
             });
 
-            alert("fim de jogo, combinação correta");
+            setModalData({
+                titulo: "Vitória",
+                mensagem: "Você acertou a combinação"
+            });
+
+            const modalElement = document.getElementById('staticBackdrop');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+
             return;
         }
 
@@ -217,7 +226,15 @@ export default function Jogo() {
         setContadorTentativas(prev => prev - 1);
 
         if (contadorTentativas-1 === 0){
-            alert("fim de jogo, tentativas esgotadas");
+            setModalData({
+                titulo: "Fim de jogo",
+                mensagem: "Tentativas esgotadas"
+            });
+
+            const modalElement = document.getElementById('staticBackdrop');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+
             return;
         }
 
@@ -248,89 +265,138 @@ export default function Jogo() {
     if (!dados) return <p>Carregando...</p>;
     
     return (
-        <div className="main">
-            <div className="display scroll">
-                {buffer.slice(0, conjunto).map((linha, i) => (
-                    <div key={i} className="resultado">
-                        {linha.map((item, j) => (
-                            <div 
-                                key={j} 
-                                style={{ "--colunas": `${100 / totalItensSuperior}%` }}
-                            >
-                                {item.combinacao ? (
-                                    <>
-                                        <Image
-                                            src={item.combinacao.resultado.imagem}
-                                            priority
-                                            width={64}
-                                            height={64}
-                                            alt={item.combinacao.resultado.nome}
-                                        />
-                                        <p>
-                                            {item.combinacao.resultado.nome}
-                                            <i className={item.icone}></i>
-                                        </p>
-                                    </>
-                                ) : (
-                                    <p>Vazio</p>
-                                )}
-                            </div>
-                        ))}
+        <>
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        gap: '10px 0px'
+                    }}>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                            {modalData.titulo}
+                        </h1>
+                        <p>{modalData.mensagem}</p>
                     </div>
-                ))}
-            </div>
-            <div className="item">
-                <button 
-                    type="button" 
-                    class="btn btn-danger"
-                    onClick={LimparCombinacao}
-                >Limpar</button>
-
-                {itensAleatorios.map((elemento, index) => (
-                    <div 
-                        key={index} 
-                        className="blocoBase"
-                        style={{
-                            border: index === itemAtivoId ? '3px solid green' : 'none'
-                        }}
-                        onClick={() => selecionarItem(elemento.nome, index)}
-                    >
-                        <Image
-                            src={elemento.imagem}
-                            priority
-                            width={64}
-                            height={64}
-                            alt={elemento.nome}
-                        />
-                        <p>{elemento.nome}</p>
+                    <div className="modal-body">
+                        <p>
+                            <strong>Combinação correta</strong>
+                        </p>
+                        <div className="d-flex flex-wrap justify-content-center gap-3">
+                            {combinacoes.map((item, index) => (
+                                <div key={index} className="text-center">
+                                    <Image
+                                        src={item.imagem}
+                                        priority
+                                        width={64}
+                                        height={64}
+                                        alt={item.nome}
+                                    />
+                                    <p>
+                                        {item.nome}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                ))}
-
-                <button 
-                    type="button" 
-                    class="btn btn-success"
-                    onClick={verificarCombinacao}
-                >Verificar</button>
-            </div>
-            <div className="descricao">
-                {alert ? 
-                    <div className="alert alert-warning show-alert" role="alert">
-                        {alert}
+                    <div class="modal-footer justify-content-center">
+                        <button 
+                            type="button" 
+                            class="btn btn-primary"
+                            onClick={() => window.location.reload()}
+                        >
+                            Jogar novamente
+                        </button>
                     </div>
-                    :
-                    <div></div>
-                }
-                <div className="tentativas">
-                    <div>Tentativas restantes</div>
-                    <div>{contadorTentativas}</div>
-                </div>
-                <div className="icons">
-                    <p><i className={feedback.correto}></i>Correto</p>
-                    <p><i className={feedback.parcial}></i>Parcial</p>
-                    <p><i className={feedback.trocar}></i>Trocar posição</p>
-                    <p><i className={feedback.errado}></i>Errado</p>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div className="main">
+                <div className="display scroll">
+                    {buffer.slice(0, conjunto).map((linha, i) => (
+                        <div key={i} className="resultado">
+                            {linha.map((item, j) => (
+                                <div 
+                                    key={j} 
+                                    style={{ "--colunas": `${100 / totalItensSuperior}%` }}
+                                >
+                                    {item.combinacao ? (
+                                        <>
+                                            <Image
+                                                src={item.combinacao.resultado.imagem}
+                                                priority
+                                                width={64}
+                                                height={64}
+                                                alt={item.combinacao.resultado.nome}
+                                            />
+                                            <p>
+                                                {item.combinacao.resultado.nome}
+                                                <i className={item.icone}></i>
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p>Vazio</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+                <div className="item">
+                    <button 
+                        type="button" 
+                        class="btn btn-danger"
+                        onClick={LimparCombinacao}
+                    >Limpar</button>
+
+                    {itensAleatorios.map((elemento, index) => (
+                        <div 
+                            key={index} 
+                            className="blocoBase"
+                            style={{
+                                border: index === itemAtivoId ? '3px solid green' : 'none'
+                            }}
+                            onClick={() => selecionarItem(elemento.nome, index)}
+                        >
+                            <Image
+                                src={elemento.imagem}
+                                priority
+                                width={64}
+                                height={64}
+                                alt={elemento.nome}
+                            />
+                            <p>{elemento.nome}</p>
+                        </div>
+                    ))}
+
+                    <button 
+                        type="button" 
+                        class="btn btn-success"
+                        onClick={verificarCombinacao}
+                    >Verificar</button>
+                </div>
+                <div className="descricao">
+                    {alert ? 
+                        <div className="alert alert-warning show-alert" role="alert">
+                            {alert}
+                        </div>
+                        :
+                        <div></div>
+                    }
+                    <div className="tentativas">
+                        <div>Tentativas</div>
+                        <div>{contadorTentativas}</div>
+                    </div>
+                    <div className="icons">
+                        <p><i className={feedback.correto}></i>Correto</p>
+                        <p><i className={feedback.parcial}></i>Parcial</p>
+                        <p><i className={feedback.trocar}></i>Trocar posição</p>
+                        <p><i className={feedback.errado}></i>Errado</p>
+                    </div>
+                </div>
+            </div>
+        </>
     )
 }
