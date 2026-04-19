@@ -19,6 +19,10 @@
         {
             "nome": "Madeira",
             "imagem": "/png/madeira.png"
+        },
+        {
+            "nome": "Metal",
+            "imagem": "/png/metal.png"
         }
     ],
     "combinacoes": [
@@ -90,6 +94,41 @@
             "resultado": {
                 "nome": "Biomassa",
                 "imagem": "/png/biomassa.png"
+            }
+        },
+        {
+            "ingredientes": ["Metal", "Água"],
+            "resultado": {
+                "nome": "Ferrugem",
+                "imagem": "/png/ferrugem.png"
+            }
+        },
+        {
+            "ingredientes": ["Metal", "Fogo"],
+            "resultado": {
+                "nome": "Brilho",
+                "imagem": "/png/brilho.png"
+            }
+        },
+        {
+            "ingredientes": ["Metal", "Terra"],
+            "resultado": {
+                "nome": "Fio terra",
+                "imagem": "/png/fioterra.png"
+            }
+        },
+        {
+            "ingredientes": ["Metal", "Energia"],
+            "resultado": {
+                "nome": "Cobre",
+                "imagem": "/png/cobre.png"
+            }
+        },
+        {
+            "ingredientes": ["Metal", "Madeira"],
+            "resultado": {
+                "nome": "Serrote",
+                "imagem": "/png/serrote.png"
             }
         }
     ]
