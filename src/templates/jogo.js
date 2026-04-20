@@ -22,8 +22,7 @@ export default function Jogo() {
     const [contadorTentativas, setContadorTentativas] = useState(tentativas);
     const [itemAtivoId, setItemAtivoId] = useState(null);
     const [alert, setAlert] = useState(null);
-    const [modalData, setModalData] = useState({titulo: null, mensagem: null})
-    const [tamanhoDisplay, setTamanhoDisplay] = useState(0);
+    const [modal, setModal] = useState({titulo: null, mensagem: null})
 
     
     useEffect(() => {
@@ -168,6 +167,22 @@ export default function Jogo() {
             return;
         }
 
+        // Tentativas esgotadas
+        if (contadorTentativas-1 === 0){
+            setContadorTentativas(0);
+            
+            setModal({
+                titulo: "FIM DE JOGO! VOCÊ PERDEU!",
+                mensagem: "Tentativas esgotadas"
+            });
+
+            const modalElement = document.getElementById('staticBackdrop');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+
+            return;
+        }
+
         // Pega os nomes do display (estando preenchidos)
         const nomes = linha.map(item => item.combinacao.resultado?.nome);
 
@@ -184,8 +199,8 @@ export default function Jogo() {
                 return novo;
             });
 
-            setModalData({
-                titulo: "Vitória",
+            setModal({
+                titulo: "PARABÉNS! VOCÊ GANHOU!",
                 mensagem: "Você acertou a combinação"
             });
 
@@ -199,20 +214,12 @@ export default function Jogo() {
         // Posição correta
         nomes.forEach((nome, i) => {
             if (combinacoes[i]?.nome === nome) {
-            
-                if (tamanhoDisplay === 0){
-                    inativos.push(i);
-                }else{
-                    inativos.push(i);
-                }
-                
+                inativos.push(i);
                 icones[i] = feedback.correto;
                 usados[i] = true;
                 contador += 1;
             }
         });
-
-        setTamanhoDisplay(prev => prev += totalItensSuperior);
 
         // Restante
         nomes.forEach((nome, i) => {
@@ -267,20 +274,6 @@ export default function Jogo() {
 
         setConjunto(prev => prev + 1);
         setContadorTentativas(prev => prev - 1);
-        
-        // Tentativas esgotadas
-        if (contadorTentativas-1 === 0){
-            setModalData({
-                titulo: "Fim de jogo",
-                mensagem: "Tentativas esgotadas"
-            });
-
-            const modalElement = document.getElementById('staticBackdrop');
-            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-            modalInstance.show();
-
-            return;
-        }
 
         // Faz o scrool descer até o limite automáticamente
         const container = document.querySelector('.display');
@@ -320,9 +313,9 @@ export default function Jogo() {
                         gap: '10px 0px'
                     }}>
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                            {modalData.titulo}
+                            {modal.titulo}
                         </h1>
-                        <p>{modalData.mensagem}</p>
+                        <p>{modal.mensagem}</p>
                     </div>
                     <div className="modal-body">
                         <p>
@@ -364,9 +357,10 @@ export default function Jogo() {
                             {linha.map((item, j) => (
                                 <div 
                                     key={j} 
+                                    className={item.icone ? `border-${item.icone.split(' ').pop().split('-').pop()}` : ""}
                                     style={{ 
                                         "--colunas": `${100 / totalItensSuperior}%`,
-                                        border: item.isActive ? '1px solid black' : '2px dashed black',
+                                        border: item.isActive ? '2px solid' : '2px dashed',
                                         opacity: item.isActive ? '0.5' : '1'
                                     }}
                                 >

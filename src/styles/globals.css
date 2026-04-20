@@ -202,12 +202,10 @@
         order: 2; 
     }
 
+    .descricao .icons,
     .descricao .tentativas{
         padding: 5px;
-    }
-
-    .descricao .icons{
-        padding: 5px;
+        scale: 0.8;
     }
 
 }
