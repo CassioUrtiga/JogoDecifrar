@@ -33,7 +33,6 @@
 .display .resultado > div {
     width: calc(var(--colunas) - 8px);
     height: 130px;
-    border: 2px dashed black;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

@@ -23,6 +23,7 @@ export default function Jogo() {
     const [itemAtivoId, setItemAtivoId] = useState(null);
     const [alert, setAlert] = useState(null);
     const [modalData, setModalData] = useState({titulo: null, mensagem: null})
+    const [tamanhoDisplay, setTamanhoDisplay] = useState(0);
 
     
     useEffect(() => {
@@ -34,6 +35,7 @@ export default function Jogo() {
 
         const bufferInicial = Array.from({ length: tentativas }, () =>
             Array.from({ length: totalItensSuperior }, () => ({
+                isActive: false,
                 combinacao: null,
                 icone: null
             }))
@@ -125,8 +127,10 @@ export default function Jogo() {
                     const novoBuffer = [...prevBuffer];
 
                     const linha = conjunto - 1;
-                    const coluna = novoBuffer[linha].findIndex(item => item.combinacao === null);
-
+                    const coluna = novoBuffer[linha].findIndex(
+                        item => !item.combinacao && !item.isActive
+                    );
+                    
                     novoBuffer[linha][coluna] = {
                         ...novoBuffer[linha][coluna],
                         combinacao: resultado,
@@ -147,10 +151,16 @@ export default function Jogo() {
     };
 
     const verificarCombinacao = () => {
+        let contador = 0;
         const linhaIndex = conjunto - 1;
         const linha = buffer[linhaIndex];
         const usados = [];
         const icones = [];
+        const inativos = [];
+
+        const buscarIngredientes = (nomeBusca) => {
+            return dados.combinacoes.find(c => c.resultado.nome === nomeBusca).ingredientes;
+        }
 
         // Verifica se todos os espaços estão preenchidos
         if (!linha.every(item => item.combinacao !== null)) {
@@ -158,8 +168,10 @@ export default function Jogo() {
             return;
         }
 
+        // Pega os nomes do display (estando preenchidos)
         const nomes = linha.map(item => item.combinacao.resultado?.nome);
 
+        // Combinação correta
         if (nomes.every((nome, i) => combinacoes[i]?.nome === nome)) {
             setBuffer(prev => {
                 const novo = [...prev];
@@ -187,10 +199,20 @@ export default function Jogo() {
         // Posição correta
         nomes.forEach((nome, i) => {
             if (combinacoes[i]?.nome === nome) {
+            
+                if (tamanhoDisplay === 0){
+                    inativos.push(i);
+                }else{
+                    inativos.push(i);
+                }
+                
                 icones[i] = feedback.correto;
                 usados[i] = true;
+                contador += 1;
             }
         });
+
+        setTamanhoDisplay(prev => prev += totalItensSuperior);
 
         // Restante
         nomes.forEach((nome, i) => {
@@ -200,16 +222,22 @@ export default function Jogo() {
             const idx = combinacoes.findIndex((c, j) =>
                 c.nome === nome && !usados[j]
             );
-
+           
             if (idx !== -1) {
                 icones[i] = feedback.trocar;
                 usados[idx] = true;
-            } else if (combinacoes.some(c => c.nome === nome)) {
+            } else if (
+                buscarIngredientes(nome).some(ing => buscarIngredientes(combinacoes[contador].nome).includes(ing))
+            ) {
                 icones[i] = feedback.parcial;
             } else {
                 icones[i] = feedback.errado;
             }
+
+            contador += 1;
         });
+
+        contador = 0;
 
         setBuffer(prev => {
             const novo = [...prev];
@@ -219,12 +247,28 @@ export default function Jogo() {
                 icone: icones[i]
             }));
 
+            // Adicionar blocos inativos
+            inativos.forEach(indexColuna => {
+                novo[linhaIndex + 1][indexColuna] = {
+                    isActive: true,
+                    combinacao: novo[linhaIndex][indexColuna].combinacao,
+                    icone: feedback.correto
+                }
+
+                novo[linhaIndex][indexColuna] = {
+                    isActive: true,
+                    combinacao: novo[linhaIndex][indexColuna].combinacao,
+                    icone: feedback.correto
+                }
+            })
+            
             return novo;
         });
 
         setConjunto(prev => prev + 1);
         setContadorTentativas(prev => prev - 1);
-
+        
+        // Tentativas esgotadas
         if (contadorTentativas-1 === 0){
             setModalData({
                 titulo: "Fim de jogo",
@@ -252,11 +296,11 @@ export default function Jogo() {
     const LimparCombinacao = () => {
         setBuffer(prevBuffer => {
             const novoBuffer = [...prevBuffer];
+            const linhaIndex = conjunto - 1;
 
-            novoBuffer[conjunto - 1] = Array.from({ length: totalItensSuperior }, () => ({
-                combinacao: null,
-                icone: null
-            }));
+            novoBuffer[linhaIndex] = novoBuffer[linhaIndex].map(item => 
+                item.isActive ? item : { ...item, combinacao: null, icone: null }
+            );
 
             return novoBuffer;
         });
@@ -320,7 +364,11 @@ export default function Jogo() {
                             {linha.map((item, j) => (
                                 <div 
                                     key={j} 
-                                    style={{ "--colunas": `${100 / totalItensSuperior}%` }}
+                                    style={{ 
+                                        "--colunas": `${100 / totalItensSuperior}%`,
+                                        border: item.isActive ? '1px solid black' : '2px dashed black',
+                                        opacity: item.isActive ? '0.5' : '1'
+                                    }}
                                 >
                                     {item.combinacao ? (
                                         <>
