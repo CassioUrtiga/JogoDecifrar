@@ -456,10 +456,10 @@ export default function Jogo() {
                         <div>{contadorTentativas}</div>
                     </div>
                     <div className="icons">
-                        <p><i className={feedback.correto}></i>Correto</p>
-                        <p><i className={feedback.parcial}></i>Parcial</p>
-                        <p><i className={feedback.trocar}></i>Trocar posição</p>
-                        <p><i className={feedback.errado}></i>Errado</p>
+                        <p><i className={feedback.correto}></i> Correto</p>
+                        <p><i className={feedback.parcial}></i> Parcialmente correto</p>
+                        <p><i className={feedback.trocar}></i> Posição incorreta</p>
+                        <p><i className={feedback.errado}></i> Incorreto</p>
                     </div>
                 </div>
             </div>
