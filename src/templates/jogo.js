@@ -167,22 +167,6 @@ export default function Jogo() {
             return;
         }
 
-        // Tentativas esgotadas
-        if (contadorTentativas-1 === 0){
-            setContadorTentativas(0);
-            
-            setModal({
-                titulo: "FIM DE JOGO! VOCÊ PERDEU!",
-                mensagem: "Tentativas esgotadas"
-            });
-
-            const modalElement = document.getElementById('staticBackdrop');
-            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-            modalInstance.show();
-
-            return;
-        }
-
         // Pega os nomes do display (estando preenchidos)
         const nomes = linha.map(item => item.combinacao.resultado?.nome);
 
@@ -202,6 +186,22 @@ export default function Jogo() {
             setModal({
                 titulo: "PARABÉNS! VOCÊ GANHOU!",
                 mensagem: "Você acertou a combinação"
+            });
+
+            const modalElement = document.getElementById('staticBackdrop');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+
+            return;
+        }
+
+        // Tentativas esgotadas
+        if (contadorTentativas-1 === 0){
+            setContadorTentativas(0);
+            
+            setModal({
+                titulo: "FIM DE JOGO! VOCÊ PERDEU!",
+                mensagem: "Tentativas esgotadas"
             });
 
             const modalElement = document.getElementById('staticBackdrop');
@@ -299,6 +299,21 @@ export default function Jogo() {
         });
     };
 
+    const LimparCombinacaoEspecifica = (coluna) => {
+        setBuffer(prevBuffer => {
+            const novoBuffer = [...prevBuffer];
+            const linhaIndex = conjunto - 1;
+
+            novoBuffer[linhaIndex][coluna] = {
+                isActive: false,
+                combinacao: null,
+                icone: null
+            }
+
+            return novoBuffer;
+        });
+    };
+
     if (!dados) return <p>Carregando...</p>;
     
     return (
@@ -377,6 +392,15 @@ export default function Jogo() {
                                                 {item.combinacao.resultado.nome}
                                                 <i className={item.icone}></i>
                                             </p>
+                                            {item.icone ? 
+                                                null 
+                                                : 
+                                                <button 
+                                                    type="button" 
+                                                    class="btn-close" aria-label="Close"
+                                                    onClick={() => LimparCombinacaoEspecifica(j)}
+                                                ></button>
+                                            }
                                         </>
                                     ) : (
                                         <p>Vazio</p>
@@ -392,7 +416,7 @@ export default function Jogo() {
                         class="btn btn-danger"
                         onClick={LimparCombinacao}
                     >Limpar</button>
-
+                    
                     {itensAleatorios.map((elemento, index) => (
                         <div 
                             key={index} 
