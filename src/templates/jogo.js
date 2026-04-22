@@ -22,7 +22,8 @@ export default function Jogo() {
     const [contadorTentativas, setContadorTentativas] = useState(tentativas);
     const [itemAtivoId, setItemAtivoId] = useState(null);
     const [alert, setAlert] = useState(null);
-    const [modal, setModal] = useState({titulo: null, mensagem: null})
+    const [modal, setModal] = useState({titulo: null, mensagem: null});
+    const [selecaoSuperior, setSelecaoSuperior] = useState({estado: false, coluna: null});
 
     
     useEffect(() => {
@@ -78,6 +79,13 @@ export default function Jogo() {
         return () => cancelAnimationFrame(requestId);
     }, [alert]);
 
+    useEffect(() => {
+        setSelecaoSuperior({
+            estado: false, 
+            coluna: null
+        });
+    }, [conjunto]);
+
     const gerarResultados = (itensAleatorios, dados) => {
         const resultados = [];
 
@@ -126,9 +134,12 @@ export default function Jogo() {
                     const novoBuffer = [...prevBuffer];
 
                     const linha = conjunto - 1;
-                    const coluna = novoBuffer[linha].findIndex(
-                        item => !item.combinacao && !item.isActive
-                    );
+                    const coluna = selecaoSuperior.estado ? 
+                        selecaoSuperior.coluna
+                    : 
+                        novoBuffer[linha].findIndex(
+                            item => !item.combinacao && !item.isActive
+                        )
                     
                     novoBuffer[linha][coluna] = {
                         ...novoBuffer[linha][coluna],
@@ -375,8 +386,20 @@ export default function Jogo() {
                                     className={item.icone ? `border-${item.icone.split(' ').pop().split('-').pop()}` : ""}
                                     style={{ 
                                         "--colunas": `${100 / totalItensSuperior}%`,
-                                        border: item.isActive ? '2px solid' : '2px dashed',
-                                        opacity: item.isActive ? '0.5' : '1'
+                                        opacity: item.isActive ? '0.5' : '1',
+                                        cursor: item.icone ? '' : 'pointer',
+                                        border: (selecaoSuperior.estado && selecaoSuperior.coluna === j && !item.icone) ? 
+                                        '4px solid #6c757d' 
+                                        : 
+                                        `${item.isActive ? '2px solid' : '2px dashed'} black`
+                                    }}
+                                    onClick={() => {
+                                        if (!item.icone) {
+                                            setSelecaoSuperior((prev) => ({
+                                                estado: !prev.estado, 
+                                                coluna: j
+                                            }));
+                                        }
                                     }}
                                 >
                                     {item.combinacao ? (
@@ -384,6 +407,7 @@ export default function Jogo() {
                                             <Image
                                                 src={item.combinacao.resultado.imagem}
                                                 priority
+                                                draggable={false}
                                                 width={64}
                                                 height={64}
                                                 alt={item.combinacao.resultado.nome}
@@ -397,8 +421,16 @@ export default function Jogo() {
                                                 : 
                                                 <button 
                                                     type="button" 
-                                                    class="btn-close" aria-label="Close"
-                                                    onClick={() => LimparCombinacaoEspecifica(j)}
+                                                    className="btn-close"
+                                                    aria-label="Close"
+                                                    style={{
+                                                        top: selecaoSuperior.estado && selecaoSuperior.coluna === j ? '-5px' : '-4px',
+                                                        right: selecaoSuperior.estado && selecaoSuperior.coluna === j ? '-6px' : '-4px'
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        LimparCombinacaoEspecifica(j);
+                                                    }}
                                                 ></button>
                                             }
                                         </>
@@ -429,6 +461,7 @@ export default function Jogo() {
                             <Image
                                 src={elemento.imagem}
                                 priority
+                                draggable={false}
                                 width={64}
                                 height={64}
                                 alt={elemento.nome}
