@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
+
+import BlocoSuperior from "@/components/blocoSuperior";
+import BlocoBase from "@/components/blocoBase";
+import Descricao from "@/components/descricao";
+import Modal from "@/components/modal";
 
 export default function Jogo() {
     const totalItensSuperior = 4;
@@ -297,7 +301,7 @@ export default function Jogo() {
         });
     };
 
-    const LimparCombinacao = () => {
+    const limparCombinacao = () => {
         setBuffer(prevBuffer => {
             const novoBuffer = [...prevBuffer];
             const linhaIndex = conjunto - 1;
@@ -310,7 +314,7 @@ export default function Jogo() {
         });
     };
 
-    const LimparCombinacaoEspecifica = (coluna) => {
+    const limparCombinacaoEspecifica = (coluna) => {
         setBuffer(prevBuffer => {
             const novoBuffer = [...prevBuffer];
             const linhaIndex = conjunto - 1;
@@ -329,172 +333,31 @@ export default function Jogo() {
     
     return (
         <>
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                    <div class="modal-header" style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        gap: '10px 0px'
-                    }}>
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                            {modal.titulo}
-                        </h1>
-                        <p>{modal.mensagem}</p>
-                    </div>
-                    <div className="modal-body">
-                        <p>
-                            <strong>Combinação correta</strong>
-                        </p>
-                        <div className="d-flex flex-wrap justify-content-center gap-3">
-                            {combinacoes.map((item, index) => (
-                                <div key={index} className="text-center">
-                                    <Image
-                                        src={item.imagem}
-                                        priority
-                                        width={64}
-                                        height={64}
-                                        alt={item.nome}
-                                    />
-                                    <p>
-                                        {item.nome}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button 
-                            type="button" 
-                            class="btn btn-primary"
-                            onClick={() => window.location.reload()}
-                        >
-                            Jogar novamente
-                        </button>
-                    </div>
-                    </div>
-                </div>
-            </div>
+            <Modal
+                modal={modal}
+                combinacoes={combinacoes}
+            />
             <div className="main">
-                <div className="display scroll">
-                    {buffer.slice(0, conjunto).map((linha, i) => (
-                        <div key={i} className="resultado">
-                            {linha.map((item, j) => (
-                                <div 
-                                    key={j} 
-                                    className={item.icone ? `border-${item.icone.split(' ').pop().split('-').pop()}` : ""}
-                                    style={{ 
-                                        "--colunas": `${100 / totalItensSuperior}%`,
-                                        opacity: item.isActive ? '0.5' : '1',
-                                        cursor: item.icone ? '' : 'pointer',
-                                        border: (selecaoSuperior.estado && selecaoSuperior.coluna === j && !item.icone) ? 
-                                        '4px solid #6c757d' 
-                                        : 
-                                        `${item.isActive ? '2px solid' : '2px dashed'} black`
-                                    }}
-                                    onClick={() => {
-                                        if (!item.icone) {
-                                            setSelecaoSuperior((prev) => ({
-                                                estado: !prev.estado, 
-                                                coluna: j
-                                            }));
-                                        }
-                                    }}
-                                >
-                                    {item.combinacao ? (
-                                        <>
-                                            <Image
-                                                src={item.combinacao.resultado.imagem}
-                                                priority
-                                                draggable={false}
-                                                width={64}
-                                                height={64}
-                                                alt={item.combinacao.resultado.nome}
-                                            />
-                                            <p>
-                                                {item.combinacao.resultado.nome}
-                                                <i className={item.icone}></i>
-                                            </p>
-                                            {item.icone ? 
-                                                null 
-                                                : 
-                                                <button 
-                                                    type="button" 
-                                                    className="btn-close"
-                                                    aria-label="Close"
-                                                    style={{
-                                                        top: selecaoSuperior.estado && selecaoSuperior.coluna === j ? '-5px' : '-4px',
-                                                        right: selecaoSuperior.estado && selecaoSuperior.coluna === j ? '-6px' : '-4px'
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        LimparCombinacaoEspecifica(j);
-                                                    }}
-                                                ></button>
-                                            }
-                                        </>
-                                    ) : (
-                                        <p>Vazio</p>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
-                <div className="item">
-                    <button 
-                        type="button" 
-                        class="btn btn-danger"
-                        onClick={LimparCombinacao}
-                    >Limpar</button>
-                    
-                    {itensAleatorios.map((elemento, index) => (
-                        <div 
-                            key={index} 
-                            className="blocoBase"
-                            style={{
-                                border: index === itemAtivoId ? '3px solid green' : 'none'
-                            }}
-                            onClick={() => selecionarItem(elemento.nome, index)}
-                        >
-                            <Image
-                                src={elemento.imagem}
-                                priority
-                                draggable={false}
-                                width={64}
-                                height={64}
-                                alt={elemento.nome}
-                            />
-                            <p>{elemento.nome}</p>
-                        </div>
-                    ))}
-
-                    <button 
-                        type="button" 
-                        class="btn btn-success"
-                        onClick={verificarCombinacao}
-                    >Verificar</button>
-                </div>
-                <div className="descricao">
-                    {alert ? 
-                        <div className="alert alert-warning show-alert" role="alert">
-                            {alert}
-                        </div>
-                        :
-                        <div></div>
-                    }
-                    <div className="tentativas">
-                        <div>Tentativas</div>
-                        <div>{contadorTentativas}</div>
-                    </div>
-                    <div className="icons">
-                        <p><i className={feedback.correto}></i> Correto</p>
-                        <p><i className={feedback.parcial}></i> Parcialmente correto</p>
-                        <p><i className={feedback.trocar}></i> Posição incorreta</p>
-                        <p><i className={feedback.errado}></i> Incorreto</p>
-                    </div>
-                </div>
+                <BlocoSuperior
+                    buffer={buffer}
+                    conjunto={conjunto}
+                    totalItensSuperior={totalItensSuperior}
+                    selecaoSuperior={selecaoSuperior}
+                    setSelecaoSuperior={setSelecaoSuperior}
+                    limparCombinacaoEspecifica={limparCombinacaoEspecifica}
+                />
+                <BlocoBase
+                    itemAtivoId={itemAtivoId}
+                    itensAleatorios={itensAleatorios}
+                    limparCombinacao={limparCombinacao}
+                    verificarCombinacao={verificarCombinacao}
+                    selecionarItem={selecionarItem}
+                />
+                <Descricao
+                    alert={alert}
+                    feedback={feedback}
+                    contadorTentativas={contadorTentativas}
+                />
             </div>
         </>
     )
